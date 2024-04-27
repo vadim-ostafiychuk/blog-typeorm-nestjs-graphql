@@ -1,0 +1,73 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type UserEntity {
+  id: Int!
+  firstName: String!
+  lastName: String!
+}
+
+type PostEntity {
+  id: Int!
+  title: String!
+  description: String!
+  authorId: Float!
+  comments: [CommentEntity!]!
+  author: UserEntity!
+}
+
+type CommentEntity {
+  id: Int!
+  content: String!
+  authorId: Int!
+  postId: Int!
+}
+
+type PostsAndCountSchema {
+  posts: [PostEntity!]!
+  count: Int!
+}
+
+type Query {
+  post(id: Int!): PostEntity!
+  postsAndCount(options: FindPostOptionsInput!): PostsAndCountSchema!
+  me(id: Float!): UserEntity!
+}
+
+input FindPostOptionsInput {
+  skip: Int
+  take: Int
+  authorId: Int
+}
+
+type Mutation {
+  createPost(data: CreatePostInput!): PostEntity!
+  updatePost(id: Int!, data: UpdatePostInput!): PostEntity!
+  deletePost(id: Int!): Boolean!
+  createComment(data: CreateCommentInput!): CommentEntity!
+  createUser(data: CreateUserInput!): UserEntity!
+}
+
+input CreatePostInput {
+  title: String!
+  description: String!
+  authorId: Int!
+}
+
+input UpdatePostInput {
+  title: String
+  description: String
+  authorId: Int
+}
+
+input CreateCommentInput {
+  content: String!
+  postId: Int!
+  authorId: Int!
+}
+
+input CreateUserInput {
+  firstName: String!
+  lastName: String!
+}
