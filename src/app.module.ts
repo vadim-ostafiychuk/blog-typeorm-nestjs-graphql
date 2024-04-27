@@ -14,6 +14,7 @@ import * as path from 'path';
     TypeOrmModule.forRoot({
       type: 'postgres',
       port: 5432,
+      host: 'localhost',
       username: 'root',
       password: 'root',
       database: 'blog',
