@@ -11,7 +11,9 @@ export class CommentEntity {
   id: number;
 
   @Field()
-  @Column()
+  @Column({
+    type: 'text',
+  })
   content: string;
 
   @Field(() => Int)

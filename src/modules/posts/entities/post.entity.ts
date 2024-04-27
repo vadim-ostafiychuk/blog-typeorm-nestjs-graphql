@@ -14,7 +14,9 @@ export class PostEntity {
   title: string;
 
   @Field()
-  @Column()
+  @Column({
+    type: 'text',
+  })
   description: string;
 
   @Field()

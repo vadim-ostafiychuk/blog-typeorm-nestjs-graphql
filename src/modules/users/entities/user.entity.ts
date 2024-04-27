@@ -15,4 +15,11 @@ export class UserEntity {
   @Field()
   @Column()
   lastName: string;
+
+  @Column()
+  hashedPassword: string;
+
+  @Field()
+  @Column()
+  email: string;
 }

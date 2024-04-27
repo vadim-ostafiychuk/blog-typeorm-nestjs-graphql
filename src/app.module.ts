@@ -8,9 +8,25 @@ import { CommentsModule } from './modules/comments/comments.module';
 import { PostCommentsModule } from './modules/post-comments/post-comments.module';
 import { PostAuthorsModule } from './modules/post-authors/post-authors.module';
 import * as path from 'path';
+import { AuthModule } from './modules/auth/auth.module';
+import { AuthService } from './modules/auth/auth.service';
+import { ConfigModule } from '@nestjs/config';
+
+function mapKeysToLowerCase(obj: Record<string, any>): Record<string, any> {
+  const result: Record<string, any> = {};
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      result[key.toLowerCase()] = obj[key];
+    }
+  }
+  return result;
+}
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       port: 5432,
@@ -28,15 +44,47 @@ import * as path from 'path';
     CommentsModule,
     PostCommentsModule,
     PostAuthorsModule,
+    AuthModule,
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
-      imports: [],
-      useFactory: async () => ({
+      imports: [AuthModule],
+      useFactory: async (authService: AuthService) => ({
         autoSchemaFile: path.join(process.cwd(), 'src/schema.gql'),
         cache: 'bounded',
+        context: async (context) => {
+          let newContext = context;
+
+          if (context?.extra?.request) {
+            const headers = mapKeysToLowerCase({
+              ...context?.extra?.request?.headers,
+              ...context?.connectionParams,
+            });
+
+            newContext = {
+              ...context,
+              req: {
+                ...context?.req,
+                ...context?.extra?.request,
+                headers,
+              },
+            };
+          }
+
+          const bearerHeader = newContext?.req?.headers?.authorization;
+
+          if (bearerHeader) {
+            const token = bearerHeader.split(' ');
+            if (token && token[1]) {
+              newContext.user = await authService.getUserByToken(token[1]);
+            }
+          }
+
+          return newContext;
+        },
         introspection: true,
         plugins: [],
       }),
+      inject: [AuthService],
     }),
   ],
   controllers: [],

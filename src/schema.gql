@@ -6,6 +6,7 @@ type UserEntity {
   id: Int!
   firstName: String!
   lastName: String!
+  email: String!
 }
 
 type PostEntity {
@@ -29,10 +30,15 @@ type PostsAndCountSchema {
   count: Int!
 }
 
+type AuthResponseEntity {
+  jwt: String!
+  user: UserEntity!
+}
+
 type Query {
   post(id: Int!): PostEntity!
   postsAndCount(options: FindPostOptionsInput!): PostsAndCountSchema!
-  me(id: Float!): UserEntity!
+  me: UserEntity!
 }
 
 input FindPostOptionsInput {
@@ -46,7 +52,8 @@ type Mutation {
   updatePost(id: Int!, data: UpdatePostInput!): PostEntity!
   deletePost(id: Int!): Boolean!
   createComment(data: CreateCommentInput!): CommentEntity!
-  createUser(data: CreateUserInput!): UserEntity!
+  login(data: LoginInput!): AuthResponseEntity!
+  register(data: RegisterInput!): AuthResponseEntity!
 }
 
 input CreatePostInput {
@@ -67,7 +74,14 @@ input CreateCommentInput {
   authorId: Int!
 }
 
-input CreateUserInput {
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input RegisterInput {
+  email: String!
+  password: String!
   firstName: String!
   lastName: String!
 }

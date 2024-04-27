@@ -12,13 +12,18 @@ export class UsersService {
 
   async findOneBy(options) {
     return this.userRepository.findOneBy({
-      id: options.id,
+      ...(options.id ? { id: options.id } : null),
+      ...(options.email ? { email: options.email } : null),
     });
   }
 
-  async createUser(data) {
-    const user = await this.userRepository.create(data);
+  async createUser(data): Promise<UserEntity> {
+    const user = await this.userRepository.create({
+      ...data,
+    });
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return this.userRepository.save(user);
   }
 }
