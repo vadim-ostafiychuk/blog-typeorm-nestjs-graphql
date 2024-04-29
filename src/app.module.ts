@@ -10,7 +10,7 @@ import { PostAuthorsModule } from './modules/post-authors/post-authors.module';
 import * as path from 'path';
 import { AuthModule } from './modules/auth/auth.module';
 import { AuthService } from './modules/auth/auth.service';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 function mapKeysToLowerCase(obj: Record<string, any>): Record<string, any> {
   const result: Record<string, any> = {};
@@ -27,17 +27,21 @@ function mapKeysToLowerCase(obj: Record<string, any>): Record<string, any> {
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      port: 5432,
-      host: 'localhost',
-      username: 'root',
-      password: 'root',
-      database: 'blog',
-      logger: 'advanced-console',
-      logging: true,
-      synchronize: true,
-      autoLoadEntities: true,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        port: +configService.getOrThrow('DATABASE_PORT'),
+        host: configService.getOrThrow('DATABASE_HOST'),
+        username: configService.getOrThrow('DATABASE_USERNAME'),
+        password: configService.getOrThrow('DATABASE_PASSWORD'),
+        database: configService.getOrThrow('DATABASE_NAME'),
+        logger: 'advanced-console',
+        logging: true,
+        synchronize: false,
+        autoLoadEntities: true,
+      }),
+      inject: [ConfigService],
     }),
     PostsModule,
     UsersModule,

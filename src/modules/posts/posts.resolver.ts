@@ -17,6 +17,7 @@ import { PostsAndCountSchema } from './posts-with-meta.schema';
 import { FindPostOptionsInput } from './find-post-options.input';
 import { UserEntity } from '../users/entities/user.entity';
 import { PostAuthorsService } from '../post-authors/post-authors.service';
+import { FindCommentOptionsInput } from '../comments/find-comment-options.input';
 
 @Resolver(() => PostEntity)
 export class PostsResolver {
@@ -81,12 +82,31 @@ export class PostsResolver {
   }
 
   @ResolveField(() => [CommentEntity], { name: 'comments' })
-  async getPostComments(@Parent() post: PostEntity) {
-    return this.postCommentsService.getPostComments(post);
+  async getPostComments(
+    @Parent() post: PostEntity,
+    @Args('options', {
+      nullable: true,
+    })
+    options: FindCommentOptionsInput,
+  ) {
+    return (
+      post.comments ||
+      (await this.postCommentsService.getPostComments(post, options))
+    );
   }
 
   @ResolveField(() => UserEntity, { name: 'author' })
   async getPostAuthor(@Parent() post: PostEntity) {
     return this.postAuthorsService.getPostAuthor(post);
+  }
+
+  @Query(() => PostsAndCountSchema, {
+    name: 'postsAndCountWithComments',
+  })
+  async findAndCountWithComments(
+    @Args('options')
+    options: FindPostOptionsInput,
+  ) {
+    return this.postsService.findAndCountWithComments(options);
   }
 }

@@ -17,8 +17,17 @@ export class CommentsService {
   }
 
   async find(options) {
-    return this.commentRepository.findBy({
-      postId: options.postId,
-    });
+    const query = {
+      where: {
+        postId: options.postId,
+      },
+      order: {},
+    };
+
+    if (options.sort) {
+      query.order[options.sort.field] = options.sort.type;
+    }
+
+    return this.commentRepository.find(query);
   }
 }

@@ -7,7 +7,10 @@ import { CommentEntity } from '../comments/entities/comment.entity';
 export class PostCommentsService {
   constructor(private readonly commentsService: CommentsService) {}
 
-  async getPostComments(post: PostEntity): Promise<CommentEntity[]> {
-    return this.commentsService.find({ postId: post.id });
+  async getPostComments(
+    post: PostEntity,
+    options = {},
+  ): Promise<CommentEntity[]> {
+    return this.commentsService.find({ ...options, postId: post.id });
   }
 }

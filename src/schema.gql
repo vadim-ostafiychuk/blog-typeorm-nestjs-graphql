@@ -9,20 +9,29 @@ type UserEntity {
   email: String!
 }
 
-type PostEntity {
-  id: Int!
-  title: String!
-  description: String!
-  authorId: Float!
-  comments: [CommentEntity!]!
-  author: UserEntity!
-}
-
 type CommentEntity {
   id: Int!
   content: String!
   authorId: Int!
   postId: Int!
+}
+
+type PostEntity {
+  id: Int!
+  title: String!
+  description: String!
+  authorId: Float!
+  comments(options: FindCommentOptionsInput): [CommentEntity!]!
+  author: UserEntity!
+}
+
+input FindCommentOptionsInput {
+  sort: SortSchema
+}
+
+input SortSchema {
+  field: String!
+  type: String!
 }
 
 type PostsAndCountSchema {
@@ -38,6 +47,7 @@ type AuthResponseEntity {
 type Query {
   post(id: Int!): PostEntity!
   postsAndCount(options: FindPostOptionsInput!): PostsAndCountSchema!
+  postsAndCountWithComments(options: FindPostOptionsInput!): PostsAndCountSchema!
   me: UserEntity!
 }
 
@@ -45,6 +55,7 @@ input FindPostOptionsInput {
   skip: Int
   take: Int
   authorId: Int
+  sort: SortSchema
 }
 
 type Mutation {

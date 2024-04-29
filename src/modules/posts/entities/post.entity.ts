@@ -1,6 +1,13 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { CommentEntity } from 'src/modules/comments/entities/comment.entity';
 import { UserEntity } from 'src/modules/users/entities/user.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @ObjectType()
 @Entity('posts')
@@ -29,4 +36,7 @@ export class PostEntity {
     nullable: false,
   })
   author: UserEntity;
+
+  @OneToMany(() => CommentEntity, (commentEntity) => commentEntity.post)
+  comments: CommentEntity[];
 }

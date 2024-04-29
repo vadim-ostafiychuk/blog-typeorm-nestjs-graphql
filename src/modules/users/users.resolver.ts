@@ -13,12 +13,4 @@ export class UsersResolver {
   me(@Context('user') user: UserEntity) {
     return user;
   }
-
-  //   @Mutation(() => UserEntity)
-  //   async createUser(
-  //     @Args('data')
-  //     data: CreateUserInput,
-  //   ) {
-  //     return this.usersService.createUser(data);
-  //   }
 }

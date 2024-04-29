@@ -19,6 +19,37 @@ export class PostsService {
   async findAndCount(options) {
     const query: any = {
       where: {},
+      order: {},
+    };
+
+    query.skip ??= options.skip && options.skip;
+    query.take ??= options.take && options.take;
+    query.where.authorId ??= options.authorId && options.authorId;
+
+    if (options.sort) {
+      query.order[options.sort.field] = options.sort.type;
+    }
+
+    const [posts, count] = await this.postRepository.findAndCount(query);
+
+    return {
+      posts,
+      count,
+    };
+  }
+
+  async findAndCountWithComments(options) {
+    const query: any = {
+      where: {},
+      relations: {
+        comments: true,
+      },
+      order: {
+        title: 'ASC',
+        comments: {
+          content: 'DESC',
+        },
+      },
     };
 
     query.skip ??= options.skip && options.skip;
